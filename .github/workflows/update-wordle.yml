@@ -1,4 +1,4 @@
-name: Update daily Wordle feed
+name: Update Password Panic live-data feed
 
 on:
   schedule:
@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: update-wordle-feed
+  group: update-password-panic-feed
   cancel-in-progress: false
 
 jobs:
@@ -18,24 +18,33 @@ jobs:
     steps:
       - name: Check out feed
         uses: actions/checkout@v7
-
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
           python-version: "3.12"
-
-      - name: Download and validate today's answer
+      - name: Download and validate today's Wordle answer
         run: python scripts/update_wordle.py
-
+      - name: Refresh resilient live-data snapshot
+        run: python scripts/update_live_data.py
+      - name: Cache the CC0 periodic-table asset
+        shell: bash
+        run: |
+          mkdir -p assets
+          if [ ! -s assets/Periodic-Table.png ]; then
+            curl --fail --location --retry 3 \
+              --user-agent "PasswordPanicWorld/1.0 (+https://github.com/Cauterizedx/password-panic-daily-feed)" \
+              "https://upload.wikimedia.org/wikipedia/commons/7/7d/Periodic-Table.png" \
+              --output assets/Periodic-Table.png
+          fi
       - name: Publish changed feed
         shell: bash
         run: |
-          if git diff --quiet -- current.txt meta.json; then
-            echo "Feed is already current."
+          if git diff --quiet -- current.txt meta.json live-data.txt assets/Periodic-Table.png; then
+            echo "Feed and art asset are already current."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add current.txt meta.json
-          git commit -m "Update daily Wordle feed"
+          git add current.txt meta.json live-data.txt assets/Periodic-Table.png
+          git commit -m "Update Password Panic live-data feed"
           git push

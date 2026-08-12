@@ -1,13 +1,18 @@
-# Password Panic daily feed
+# Password Panic live-data feed
 
-This public GitHub Pages repository supplies the five-letter daily Wordle answer used by the Password Panic VRChat world.
+This public GitHub Pages repository supplies frozen online data used by the Password Panic VRChat world.
 
-The VRChat-safe endpoint is:
+VRChat-safe endpoints:
 
-`https://cauterizedx.github.io/password-panic-daily-feed/current.txt`
+- `https://cauterizedx.github.io/password-panic-daily-feed/current.txt`
+- `https://cauterizedx.github.io/password-panic-daily-feed/live-data.txt`
 
-`current.txt` contains exactly one uppercase, five-letter word followed by a newline. `meta.json` records the puzzle date and update timestamp. A scheduled GitHub Action refreshes the files from the New York Times Wordle endpoint and refuses to publish malformed data.
+`current.txt` remains the backwards-compatible five-letter Wordle endpoint. `live-data.txt` is a simple `KEY=VALUE` snapshot containing Wordle, five delayed/latest-close stock quotes, global weather, exchange rates, the strongest USGS earthquake from the last day, an On This Day event, and one multiple-choice trivia question.
 
-The updater runs hourly so it recovers automatically from delayed puzzle publication or a transient request failure. If the online feed is unavailable, the world uses its packaged fallback rather than making a game unwinnable.
+The world downloads the GitHub Pages file once, freezes it for that room instance, and synchronizes the selected answers to all players. Each upstream section updates independently. If a provider is temporarily unavailable, the updater preserves that section's last valid values instead of publishing blanks.
 
-This project is not affiliated with or endorsed by The New York Times or Wordle.
+The updater runs hourly. If the GitHub feed itself is unavailable, the world uses its packaged snapshot so the game remains solvable. Market values are informational delayed/latest-close figures for a party game, not financial advice.
+
+The periodic table displayed in the room is cached at `assets/Periodic-Table.png`. It comes from [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Periodic-Table.png), where the author dedicated the image to the public domain under CC0 1.0.
+
+This project is not affiliated with or endorsed by The New York Times, Wordle, Yahoo, Open-Meteo, Wikimedia, Open Trivia DB, Frankfurter, or USGS.
